@@ -81,7 +81,7 @@ For full details, see [PRIVACY.md](PRIVACY.md).
 ## Installation
 
 ```bash
-git clone https://github.com/<your-fork>/claude_launcher.git
+git clone https://github.com/AXIA-Enterprises/claude_launcher.git
 cd claude_launcher
 python3 claude_launcher.py
 ```
