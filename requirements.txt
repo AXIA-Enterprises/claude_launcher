@@ -1,0 +1,9 @@
+# Claude Launcher — runtime dependencies
+#
+# The app itself has NO third-party Python dependencies. It relies only on
+# Python 3's standard library (including tkinter, which ships with python.org
+# Python on macOS/Windows; Linux users may need `python3-tk` from their
+# package manager — the app will try to install it automatically on first run).
+#
+# The optional icon-build script (make_icon.py) needs Pillow:
+Pillow>=10.0
