@@ -180,8 +180,22 @@ def get_roots():
                 if v.is_dir():
                     roots.append((f"Drive: {v.name}", v))
     elif sys.platform == "win32":
-        add("Desktop", home / "Desktop")
-        add("Documents", home / "Documents")
+        # On Windows with OneDrive folder redirection, Desktop/Documents live
+        # under %OneDrive% rather than %USERPROFILE%. Prefer the redirected
+        # location when it exists, otherwise fall back to the home-dir version.
+        onedrive = os.environ.get("OneDrive") or os.environ.get("OneDriveConsumer")
+        onedrive_path = Path(onedrive) if onedrive else None
+
+        def add_win(label, name):
+            if onedrive_path is not None:
+                redirected = onedrive_path / name
+                if redirected.exists() and redirected.is_dir():
+                    roots.append((label, redirected))
+                    return
+            add(label, home / name)
+
+        add_win("Desktop", "Desktop")
+        add_win("Documents", "Documents")
         add("Downloads", home / "Downloads")
         add("Home", home)
         for letter in string.ascii_uppercase:
