@@ -3,10 +3,11 @@
 Run: python make_icon.py — produces AppIcon.icns alongside this script.
 """
 
-from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
-import subprocess
 import shutil
+import subprocess
+from pathlib import Path
+
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 OUT_DIR = Path(__file__).resolve().parent
 ICONSET = OUT_DIR / "AppIcon.iconset"
