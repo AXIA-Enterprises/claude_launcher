@@ -140,13 +140,23 @@ _bootstrap()
 import tkinter as tk  # noqa: E402
 from tkinter import messagebox, simpledialog, ttk  # noqa: E402
 
-# Bump the per-shell file-descriptor limit before launching claude — the
-# default 256 is too low and triggers "low max file descriptors" errors.
-# Failures are silenced (system hard limit varies); claude still launches.
-CLAUDE_CMD = (
-    "ulimit -n 65536 2>/dev/null; "
-    "claude --allow-dangerously-skip-permissions"
-)
+# The shell one-liner the launcher hands to the platform's terminal.
+#
+# On Unix (macOS / Linux) we bump the per-shell file-descriptor limit
+# first — the default 256 is too low and triggers "low max file
+# descriptors" warnings from claude. The `ulimit` failure path is silenced
+# (system hard limit varies), and claude still launches.
+#
+# `cmd.exe` on Windows has no `ulimit` and no equivalent that claude
+# needs, and POSIX redirection (`2>/dev/null`) and `;` separators don't
+# parse correctly there. Use a clean Windows-friendly command instead.
+if sys.platform == "win32":
+    CLAUDE_CMD = "claude --allow-dangerously-skip-permissions"
+else:
+    CLAUDE_CMD = (
+        "ulimit -n 65536 2>/dev/null; "
+        "claude --allow-dangerously-skip-permissions"
+    )
 
 # Palette — dark mode (charcoal / soft white / accent blue)
 BG = "#1E1F24"
