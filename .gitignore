@@ -30,9 +30,13 @@ dist/
 AppIcon.icns
 AppIcon.iconset/*.png
 
-# Optional .app bundle build outputs
+# Optional .app bundle build outputs (built locally via ./build_app.sh,
+# distributed via GitHub Releases — not part of the source tree)
 *.app/
 ClaudeLauncher.app/
+*.app.zip
+AppIcon.icns
+AppIcon.iconset/*.png
 
 # Local state files (the app writes these to $HOME, but ignore here in case
 # anyone runs it from inside the repo and their state ends up alongside)

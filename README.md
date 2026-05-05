@@ -80,14 +80,51 @@ For full details, see [PRIVACY.md](PRIVACY.md).
 
 ## Installation
 
+### macOS — easiest (download the prebuilt app)
+
+1. Go to the [latest release](https://github.com/AXIA-Enterprises/claude_launcher/releases/latest)
+   and download `ClaudeLauncher.app.zip`.
+2. Double-click the zip in Finder to expand it.
+3. Drag `ClaudeLauncher.app` into `/Applications` (or onto your Desktop for
+   a quick shortcut).
+4. **First launch:** right-click the app and choose **Open**. macOS will warn
+   "unidentified developer" because the app isn't notarized through a paid
+   Apple Developer ID. Click **Open**. Future launches are normal
+   double-clicks.
+
+The bundled app uses whichever Python 3 is on the user's login shell `PATH`
+(typically Homebrew, pyenv, or the python.org installer — all of which ship
+with Tkinter).
+
+### Any platform — from source
+
 ```bash
 git clone https://github.com/AXIA-Enterprises/claude_launcher.git
 cd claude_launcher
 python3 claude_launcher.py
 ```
 
-That is the entire installation process. The application has zero third-party
-Python dependencies at runtime.
+The application has zero third-party Python dependencies at runtime.
+
+### One-click launchers (after cloning)
+
+For users who have cloned the repo and want a clickable shortcut instead of
+typing `python3 claude_launcher.py`:
+
+- **macOS:** double-click `Launch_Claude_Launcher.command`
+- **Windows:** double-click `Launch_Claude_Launcher.bat`
+
+(For a Desktop shortcut on macOS, prefer the prebuilt `.app` above — it is
+self-contained and works regardless of where it lives on disk. The
+`.command` file expects to remain inside the cloned repo.)
+
+### macOS — building the app from source
+
+```bash
+pip install -r requirements.txt    # installs Pillow (icon generator)
+./build_app.sh                     # builds ClaudeLauncher.app + ad-hoc signs
+open ClaudeLauncher.app
+```
 
 ## Optional: building a macOS application bundle
 
