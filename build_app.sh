@@ -68,19 +68,41 @@ PLIST
 printf 'APPL????' > "$APP/Contents/PkgInfo"
 
 # Step 4: launcher executable. The .app is launched by Finder via launchd,
-# which provides a stripped-down PATH that excludes user shell-profile
-# additions (nvm, pyenv, homebrew, python.org). Query the user's login
-# shell for its real python3 location so we pick up whatever they have
-# installed, regardless of the manager.
+# which provides a stripped-down PATH and no controlling TTY. Spawning the
+# user's login shell to query for python3 is unreliable in this context —
+# user .zshrc plugins can block on read/network calls without a TTY,
+# hanging the launcher indefinitely. Instead, walk a list of known
+# install locations (homebrew, python.org, pyenv) and test each for
+# tkinter, picking the first valid one.
 cat > "$APP/Contents/MacOS/ClaudeLauncher" <<'LAUNCHER'
 #!/bin/bash
-set -e
 RES_DIR="$(cd "$(dirname "$0")/../Resources" && pwd)"
-SHELL_BIN="${SHELL:-/bin/zsh}"
-PYTHON3="$("$SHELL_BIN" -l -c 'command -v python3' 2>/dev/null || true)"
-if [ -z "$PYTHON3" ] || [ ! -x "$PYTHON3" ]; then
-    PYTHON3="$(command -v python3 2>/dev/null || echo /usr/bin/python3)"
+
+CANDIDATES=(
+    "/opt/homebrew/bin/python3"
+    "/usr/local/bin/python3"
+    "$HOME/.pyenv/shims/python3"
+    "/Library/Frameworks/Python.framework/Versions/Current/bin/python3"
+    "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3"
+    "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3"
+    "/Library/Frameworks/Python.framework/Versions/3.11/bin/python3"
+    "/Library/Frameworks/Python.framework/Versions/3.10/bin/python3"
+    "/usr/bin/python3"
+)
+
+PYTHON3=""
+for c in "${CANDIDATES[@]}"; do
+    if [ -x "$c" ] && "$c" -c "import tkinter" >/dev/null 2>&1; then
+        PYTHON3="$c"
+        break
+    fi
+done
+
+if [ -z "$PYTHON3" ]; then
+    osascript -e 'display alert "Claude Launcher" message "Could not find a Python 3 install with Tkinter. Install Python 3 from python.org (Tkinter is bundled) or run:\n\n  brew install python-tk@3.12"' >/dev/null 2>&1
+    exit 1
 fi
+
 exec "$PYTHON3" "$RES_DIR/claude_launcher.py"
 LAUNCHER
 chmod +x "$APP/Contents/MacOS/ClaudeLauncher"

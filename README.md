@@ -80,21 +80,37 @@ For full details, see [PRIVACY.md](PRIVACY.md).
 
 ## Installation
 
-### macOS — easiest (download the prebuilt app)
+### macOS — easiest (Homebrew, recommended)
 
-1. Go to the [latest release](https://github.com/AXIA-Enterprises/claude_launcher/releases/latest)
-   and download `ClaudeLauncher.app.zip`.
+```bash
+brew install --cask AXIA-Enterprises/tap/claude-launcher
+```
+
+That's it. The app appears in `/Applications`, ready for double-click.
+Updates with `brew upgrade --cask claude-launcher`. The Cask strips the
+quarantine attribute automatically, so macOS Tahoe's hardened Gatekeeper
+doesn't block first launch.
+
+### macOS — direct download
+
+1. Download `ClaudeLauncher.app.zip` from the
+   [latest release](https://github.com/AXIA-Enterprises/claude_launcher/releases/latest).
 2. Double-click the zip in Finder to expand it.
-3. Drag `ClaudeLauncher.app` into `/Applications` (or onto your Desktop for
-   a quick shortcut).
-4. **First launch:** right-click the app and choose **Open**. macOS will warn
-   "unidentified developer" because the app isn't notarized through a paid
-   Apple Developer ID. Click **Open**. Future launches are normal
-   double-clicks.
+3. **Strip the quarantine attribute** (one-time, required on macOS Tahoe / Sequoia):
+   ```bash
+   xattr -cr ~/Downloads/ClaudeLauncher.app
+   ```
+   Without this, macOS hangs the app's launcher script on first run with no
+   error message. This is a side effect of macOS's Gatekeeper-on-quarantined-
+   scripts behavior; the only way around it without the `xattr` step is
+   Apple-notarized binaries (paid Developer ID), which this project does not
+   yet have. The Homebrew install above runs `xattr -cr` automatically.
+4. Drag `ClaudeLauncher.app` to `/Applications` (or onto your Desktop for a
+   quick shortcut). Double-click to launch.
 
-The bundled app uses whichever Python 3 is on the user's login shell `PATH`
-(typically Homebrew, pyenv, or the python.org installer — all of which ship
-with Tkinter).
+The bundled app discovers Python 3 from a list of common install locations
+(Homebrew, pyenv, python.org, system) and uses the first one with Tkinter
+available.
 
 ### Any platform — from source
 
